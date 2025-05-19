@@ -7,6 +7,8 @@
 #include <fstream>
 #include <math.h>
 #include <vector>
+#include <variant>
+#include <boost/rational.hpp>
 
 
 // Define this before compilation if you want a stricter adherence 
@@ -18,13 +20,18 @@
 
 namespace scala {
 
+  using boost::rational, boost::rational_cast;
+
     struct degree {
 
-        double ratio;
+      template<class... Ts>
+      struct overload : Ts... { using Ts::operator()...; };
+
+        std::variant<double, rational<int>> ratio;
 
         degree (int n, int d){
             // Two inputs: a ratio
-            ratio  = static_cast <double> (n) / static_cast <double> (d);
+            ratio  = rational<int> (n, d);
         }
 
         explicit degree (double cents){
@@ -34,8 +41,42 @@ namespace scala {
 
         double get_ratio() {
             // Use to get the value
-            return ratio;
-        }
+	    // now somewhat confusingly named but preserves prior behavior
+	return std::visit(overload{
+	    [](double& p)        { return p; },
+	    [](rational<int>& q) { return rational_cast<double>(q); }
+	      }, ratio);
+      }
+
+      // may want to also overload * and / in addition to *= and /=
+      degree& operator*= (const degree& d) {
+	std::visit(overload{
+	    [](rational<int>& q1, const rational<int>& q2) {
+	      q1 *= q2; },
+	    [&](rational<int>& q, const double& p) {
+	      ratio.emplace<double>(rational_cast<double>(q) * p); },
+	    [](double& p, const rational<int>& q) {
+	      p *= rational_cast<double>(q); },
+	    [](double& p1, const double& p2) {
+	      p1 *= p2; }
+	    }, ratio, d.ratio);
+	return *this;
+      }
+
+      degree& operator/= (const degree& d) {
+	std::visit(overload{
+	    [](rational<int>& q1, const rational<int>& q2) {
+	      q1 /= q2; },
+	    [&](rational<int>& q, const double& p) {
+	      ratio.emplace<double>(rational_cast<double>(q) / p); },
+	    [](double& p, const rational<int>& q) {
+	      p /= rational_cast<double>(q); },
+	    [](double& p1, const double& p2) {
+	      p1 /= p2; }
+	    }, ratio, d.ratio);
+	return *this;
+      }
+
     };
 
     struct scale {
@@ -44,7 +85,7 @@ namespace scala {
 
         scale () {
             // The first degree is a scala file is always implicit. Make it explicit.
-            degrees.push_back( *(new degree(0.0)));
+            degrees.push_back( *(new degree(1,1)));
         }
 
         ~scale(){
@@ -147,4 +188,5 @@ namespace scala {
 
     scale read_scl(std::ifstream& input_file);
     kbm read_kbm(std::ifstream& input_file);
+    degree convert_midi(int note, scale scl, kbm map);
 }

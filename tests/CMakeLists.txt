@@ -43,6 +43,11 @@ add_executable (test-kbm-xs kbm-xs.cpp)
 target_link_libraries(test-kbm-xs PUBLIC scala-file)
 add_test(NAME "Keyboard-mapping-with-non-entries" COMMAND test-kbm-xs)
 
+# Tests MIDI mapping
+add_executable (test-midi midi.cpp)
+target_link_libraries(test-midi PUBLIC scala-file)
+add_test(NAME "MIDI-Mapping" COMMAND test-midi)
+
 # This copies our test data into our build directory, so that our tests 
 # have access to it.
 file(COPY scales DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

@@ -2,7 +2,7 @@
 # versions required.
 
 cmake_minimum_required(VERSION 3.0.0)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 enable_testing()
@@ -10,6 +10,9 @@ enable_testing()
 # Define the project. 
 
 project(ScalaFileRead VERSION 0.1.1)
+
+find_package(Boost 1.70.0 CONFIG REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
 
 # This is our library, and we'll link against it.
 
