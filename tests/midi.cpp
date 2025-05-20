@@ -10,7 +10,7 @@ int main(int, char**) {
   scala::scale loaded_scl = scala::read_scl(test_scl);
   scala::kbm loaded_kbm = scala::read_kbm(test_kbm);
   //  loaded_kbm.reference_note = loaded_kbm.middle_note;
-  
+
   for(int i=0; i<128; i++) {
     try {
       scala::degree d = scala::convert_midi(i, loaded_scl, loaded_kbm);

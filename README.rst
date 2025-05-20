@@ -149,7 +149,7 @@ This library also now supports using the information in the ``scala::scale`` and
     degree convert_midi(int note, scale scl, kbm map);
   }
 
-If the mapping file specifies a reference note different from the middle note, the ratios returned by ``scala::convert_midi()`` will reflect that, so that they may be multiplied by the reference frequency with no further adjustment. If you don't want this behavior, make sure your ``.kbm`` file specifies the same MIDI note value for the middle note and the reference note for which a frequency is given.
+If the mapping file specifies a reference note different from the middle note, the ratios returned by ``scala::convert_midi()`` will reflect that, so that they may be multiplied by the reference frequency with no further adjustment. If you don't want this behavior, you can either make sure your ``.kbm`` file specifies the same MIDI note value for the middle note and the reference note for which a frequency is given, or set ``kbm.reference_note = kbm.center_note``. See ``tests/midi.cpp`` for an example.
 
 The File Formats
 ----------------
