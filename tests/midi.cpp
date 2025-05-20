@@ -5,13 +5,12 @@
 // rational vs. irrational type conversions
 int main(int, char**) {
   std::ifstream test_scl, test_kbm;
-    test_scl.open("scales/meanquar.scl");
-    test_kbm.open("kbm/12-tet.kbm");
-  //  test_scl.open("scales/ptolemy.scl");
-  //  test_kbm.open("kbm/white.kbm");
+  test_scl.open("scales/meanquar.scl");
+  test_kbm.open("kbm/12-tet.kbm");
   scala::scale loaded_scl = scala::read_scl(test_scl);
   scala::kbm loaded_kbm = scala::read_kbm(test_kbm);
-
+  //  loaded_kbm.reference_note = loaded_kbm.middle_note;
+  
   for(int i=0; i<128; i++) {
     try {
       scala::degree d = scala::convert_midi(i, loaded_scl, loaded_kbm);
