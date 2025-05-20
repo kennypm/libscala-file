@@ -1,11 +1,6 @@
 #include <iostream>
 #include "scala_file.hpp"
 
-using boost::rational;
-
-template <class... Ts>
-struct overload : Ts... { using Ts::operator() ...; };
-
 // this is a crude test, just to observe the behavior of the
 // rational vs. irrational type conversions
 int main(int, char**) {
@@ -20,13 +15,13 @@ int main(int, char**) {
   for(int i=0; i<128; i++) {
     try {
       scala::degree d = scala::convert_midi(i, loaded_scl, loaded_kbm);
-      std::visit(overload{
+      std::visit(scala::degree::overload{
 	  [](auto& val) { std::cout << val << std::endl; }
 	}, d.ratio);
     } catch (const std::runtime_error& e) {
       //      std::cout << e.what() << std::endl;
     }
   }
-    
+
   return 0;
 }

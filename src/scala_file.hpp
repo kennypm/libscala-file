@@ -42,11 +42,11 @@ namespace scala {
         double get_ratio() {
             // Use to get the value
 	    // now somewhat confusingly named but preserves prior behavior
-	return std::visit(overload{
+	  return std::visit(overload{
 	    [](double& p)        { return p; },
 	    [](rational<int>& q) { return rational_cast<double>(q); }
 	      }, ratio);
-      }
+	}
 
       // may want to also overload * and / in addition to *= and /=
       degree& operator*= (const degree& d) {
