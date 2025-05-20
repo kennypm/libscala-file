@@ -13,37 +13,6 @@ can use it in your C/C++ code to to read these files, should you need to.
 Use 
 ---
 
-The ``scala::degree`` Type
-..........................
-
-This new version of ``libscala-file`` uses ``boost::rational`` wherever possible to represent rational values with greater precision than the floating-point evaluation of the ratio.  Using ``scala::get_ratio()`` will still always return a ``double``, converting rational values where needed.
-
-The ``*=`` and ``/=`` operators have been overloaded to enable multiplying and dividing ``scala::degree``'s against each other. Operations involving two rationals will stay in rational form; all others are converted to ``double`` once an irrational value is involved.
-
-To access the rational type inside the ``std::variant``, you can do something like this:
-::
-  std::ifstream scl_file;
-  scl_file.open("scales/meanquar.scl");
-  scala::scale scl = scala::read_scl(scl_file);
-  scala::degree d = scl.degrees[0];
-  std::visit(scala::degree::overload{
-    [](boost::rational<int>& q) { /* handle rational here */ },
-    [](double& p)               { /* handle irrational here */ }
-  }, d.ratio);
-
-The ``boost::rational`` class also provides member functions ``numerator()`` and ``denominator()`` for access to the corresponding integer values. For more information, you can consult the `Boost documentation <https://www.boost.org/doc/libs/latest/libs/rational/index.html>`__.
-
-MIDI Tuning Conversion
-......................
-
-This library also now supports using the information in the ``scala::scale`` and ``scala::kbm`` types to convert MIDI note values to a ``scala::degree``, which will preserve a rational representation wherever possible as described above. The function signature looks like this:
-::
-  namespace scala {
-    degree convert_midi(int note, scale scl, kbm map);
-  }
-
-If the mapping file specifies a reference note different from the middle note, the ratios returned by ``scala::convert_midi()`` will reflect that, so that they may be multiplied by the reference frequency with no further adjustment. If you don't want this behavior, make sure your ``.kbm`` file specifies the same MIDI note value for the middle note and the reference note for which a frequency is given.
-
 The SCL File
 .............
 
@@ -150,6 +119,37 @@ the values of the input.
     int octave_degree;
     std::vector <int> mapping;
     // Member function...
+
+The ``scala::degree`` Type
+..........................
+
+This new version of ``libscala-file`` uses ``boost::rational`` wherever possible to represent rational values with greater precision than the floating-point evaluation of the ratio.  Using ``scala::get_ratio()`` will still always return a ``double``, converting rational values where needed.
+
+The ``*=`` and ``/=`` operators have been overloaded to enable multiplying and dividing ``scala::degree``'s against each other. Operations involving two rationals will stay in rational form; all others are converted to ``double`` once an irrational value is involved.
+
+To access the rational type inside the ``std::variant``, you can do something like this:
+::
+  std::ifstream scl_file;
+  scl_file.open("scales/meanquar.scl");
+  scala::scale scl = scala::read_scl(scl_file);
+  scala::degree d = scl.degrees[0];
+  std::visit(scala::degree::overload{
+    [](boost::rational<int>& q) { /* handle rational here */ },
+    [](double& p)               { /* handle irrational here */ }
+  }, d.ratio);
+
+The ``boost::rational`` class also provides member functions ``numerator()`` and ``denominator()`` for access to the corresponding integer values. For more information, you can consult the `Boost documentation <https://www.boost.org/doc/libs/latest/libs/rational/index.html>`__.
+
+MIDI Tuning Conversion
+......................
+
+This library also now supports using the information in the ``scala::scale`` and ``scala::kbm`` types to convert MIDI note values to a ``scala::degree``, which will preserve a rational representation wherever possible as described above. The function signature looks like this:
+::
+  namespace scala {
+    degree convert_midi(int note, scale scl, kbm map);
+  }
+
+If the mapping file specifies a reference note different from the middle note, the ratios returned by ``scala::convert_midi()`` will reflect that, so that they may be multiplied by the reference frequency with no further adjustment. If you don't want this behavior, make sure your ``.kbm`` file specifies the same MIDI note value for the middle note and the reference note for which a frequency is given.
 
 The File Formats
 ----------------
