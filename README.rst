@@ -123,9 +123,9 @@ the values of the input.
 The ``scala::degree`` Type
 ..........................
 
-This new version of ``libscala-file`` uses ``boost::rational`` wherever possible to represent rational values as a pair of integers, with greater precision than the floating-point evaluation of the ratio.  Using ``scala::get_ratio()`` will still always return a ``double``, converting rational values where needed.
+This new version of ``libscala-file`` uses ``boost::rational`` wherever possible to represent rational values as a pair of integers. Using ``scala::get_ratio()`` will still always return a ``double``, converting rational values where needed.
 
-The ``*=`` and ``/=`` operators have been overloaded to enable multiplying and dividing ``scala::degree``'s against each other. Operations involving two rationals will stay in rational form and are automatically reduced; all others are converted to ``double`` once an irrational value is involved.
+Multiplication and division of rationals is performed without evaluating the floating-point division of numerator and denominator until necessary.  The ``* / *= /=`` operators for ``scala::degree`` have been overloaded to enable this; operations involving two rationals will stay in rational form and are automatically reduced. All others are converted to ``double`` once an irrational value is involved.
 
 To access the rational type inside the ``std::variant``, you can do something like this:
 ::
@@ -133,6 +133,7 @@ To access the rational type inside the ``std::variant``, you can do something li
   scl_file.open("scales/meanquar.scl");
   scala::scale scl = scala::read_scl(scl_file);
   scala::degree d = scl.degrees[0];
+  
   std::visit(scala::degree::overload{
     [](boost::rational<int>& q) { /* handle rational here */ },
     [](double& p)               { /* handle irrational here */ }
