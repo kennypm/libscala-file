@@ -123,7 +123,7 @@ the values of the input.
 The ``scala::degree`` Type
 ..........................
 
-This new version of ``libscala-file`` uses ``boost::rational`` wherever possible to represent rational values as a pair of integers. Using ``scala::get_ratio()`` will still always return a ``double``, converting rational values where needed.
+This new version of ``libscala-file`` uses ``boost::rational`` wherever possible to represent rational values as a pair of integers. Using ``scala::scale::get_ratio()`` and ``scala::degree::get_ratio()`` will still always return a ``double``, converting rational values where needed.
 
 Multiplication and division of rationals is performed without evaluating the floating-point division of numerator and denominator until necessary.  The ``* / *= /=`` operators for ``scala::degree`` have been overloaded to enable this; operations involving two rationals will stay in rational form and are automatically reduced. All others are converted to ``double`` once an irrational value is involved.
 
