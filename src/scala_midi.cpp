@@ -38,7 +38,7 @@ namespace scala {
 
   degree convert_midi(int note, scala::scale scl, scala::kbm map){
     if(note == map.reference_note)
-      return *(new degree(1,1));
+      return degree(1,1);
     else
       return convert_midi_inner(note, scl, map);
   }

@@ -20,7 +20,7 @@
 
 namespace scala {
 
-  using boost::rational, boost::rational_cast;
+  using boost::rational, boost::rational_cast, std::log2;
 
     struct degree {
 
@@ -39,6 +39,10 @@ namespace scala {
             ratio = pow(pow(2, 1.0 / 12.0), cents/100.0);
         }
 
+        explicit degree (rational<int> q){
+	    ratio = q;
+        }
+
         double get_ratio() {
             // Use to get the value
             // now somewhat confusingly named but preserves prior behavior
@@ -48,7 +52,33 @@ namespace scala {
 	      }, ratio);
         }
 
-      // may want to also overload * and / in addition to *= and /=
+      // need to test * and / before PR
+      degree operator* (const degree& d) const {
+	return std::visit(overload{
+	    [](const rational<int>& q1, const rational<int>& q2) {
+	      return degree(q1 * q2); },
+	    [](const rational<int>& q, const double& p) {
+	      return degree(1200. * log2(rational_cast<double>(q) * p)); },
+	    [](const double& p, const rational<int>& q) {
+	      return degree(1200. * log2(p * rational_cast<double>(q))); },
+            [](const double& p1, const double& p2) {
+	      return degree(1200. * log2(p1 * p2)); }
+	}, this->ratio, d.ratio);
+      }
+
+      degree operator/ (const degree& d) const {
+	return std::visit(overload{
+	    [](const rational<int>& q1, const rational<int>& q2) {
+	      return degree(q1 / q2); },
+	    [](const rational<int>& q, const double& p) {
+	      return degree(1200. * log2(rational_cast<double>(q) / p)); },
+	    [](const double& p, const rational<int>& q) {
+	      return degree(1200. * log2(p / rational_cast<double>(q))); },
+            [](const double& p1, const double& p2) {
+	      return degree(1200. * log2(p1 / p2)); }
+	}, this->ratio, d.ratio);
+      }
+
       degree& operator*= (const degree& d) {
 	std::visit(overload{
 	    [](rational<int>& q1, const rational<int>& q2) {
