@@ -52,7 +52,6 @@ namespace scala {
 	      }, ratio);
         }
 
-      // need to test * and / before PR
       degree operator* (const degree& d) const {
 	return std::visit(overload{
 	    [](const rational<int>& q1, const rational<int>& q2) {
