@@ -144,13 +144,13 @@ The ``boost::rational`` class also provides member functions ``numerator()`` and
 MIDI Tuning Conversion
 ......................
 
-This library also now supports using the information in the ``scala::scale`` and ``scala::kbm`` types to convert MIDI note values to a ``scala::degree``, which will preserve a rational representation wherever possible as described above. The function signature looks like this:
+This library now also supports using the information in the ``scala::scale`` and ``scala::kbm`` types to convert MIDI note values to a ``scala::degree``, which will preserve a rational representation wherever possible as described above. The function signature looks like this:
 ::
   namespace scala {
     degree convert_midi(int note, scale scl, kbm map);
   }
 
-If the mapping file specifies a reference note different from the middle note, the ratios returned by ``scala::convert_midi()`` will reflect that, so that they may be multiplied by the reference frequency with no further adjustment. If you don't want this behavior, you can either make sure your ``.kbm`` file specifies the same MIDI note value for the middle note and the reference note for which a frequency is given, or set ``kbm.reference_note = kbm.center_note`` after parsing. See ``tests/midi.cpp`` for an example.
+If the mapping file specifies a reference note different from the middle note, this will be reflected in ratios returned by ``scala::convert_midi()`` so that they may be multiplied by the reference frequency with no further adjustment. If you don't want this behavior, you can either make sure your ``.kbm`` file specifies the same MIDI note value for the middle note and the reference note for which a frequency is given, or set ``kbm.reference_note = kbm.center_note`` after parsing. See ``tests/midi.cpp`` for an example.
 
 The File Formats
 ----------------
