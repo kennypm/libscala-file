@@ -20,18 +20,16 @@
 
 namespace scala {
 
-  using boost::rational, boost::rational_cast, std::log2;
-
     struct degree {
 
-      template<class... Ts>
-      struct overload : Ts... { using Ts::operator()...; };
+        template<class... Ts>
+        struct overload : Ts... { using Ts::operator()...; };
 
-        std::variant<double, rational<int>> ratio;
+        std::variant<double, boost::rational<int>> ratio;
 
         degree (int n, int d){
             // Two inputs: a ratio
-            ratio  = rational<int> (n, d);
+            ratio = boost::rational<int> (n, d);
         }
 
         explicit degree (double cents){
@@ -39,72 +37,81 @@ namespace scala {
             ratio = pow(pow(2, 1.0 / 12.0), cents/100.0);
         }
 
-        explicit degree (rational<int> q){
+        explicit degree (boost::rational<int> q){
 	    ratio = q;
         }
 
         double get_ratio() {
             // Use to get the value
             // now somewhat confusingly named but preserves prior behavior
-	  return std::visit(overload{
-	    [](double& p)        { return p; },
-	    [](rational<int>& q) { return rational_cast<double>(q); }
-	      }, ratio);
+            using boost::rational, boost::rational_cast;
+            return std::visit(overload{
+                [](double& p)        { return p; },
+                [](rational<int>& q) { return rational_cast<double>(q); }
+            }, ratio);
         }
 
-      degree operator* (const degree& d) const {
-	return std::visit(overload{
-	    [](const rational<int>& q1, const rational<int>& q2) {
-	      return degree(q1 * q2); },
-	    [](const rational<int>& q, const double& p) {
-	      return degree(1200. * log2(rational_cast<double>(q) * p)); },
-	    [](const double& p, const rational<int>& q) {
-	      return degree(1200. * log2(p * rational_cast<double>(q))); },
-            [](const double& p1, const double& p2) {
-	      return degree(1200. * log2(p1 * p2)); }
-	}, this->ratio, d.ratio);
-      }
+        degree operator* (const degree& d) const {
+            using boost::rational, boost::rational_cast, std::log2;
+            return std::visit(overload{
+                [](const rational<int>& q1, const rational<int>& q2) {
+                    return degree(q1 * q2); },
+                [](const rational<int>& q, const double& p) {
+                    return degree(1200. *
+				  log2(rational_cast<double>(q) * p)); },
+                [](const double& p, const rational<int>& q) {
+                    return degree(1200. *
+				  log2(p * rational_cast<double>(q))); },
+                [](const double& p1, const double& p2) {
+                    return degree(1200. * log2(p1 * p2)); }
+            }, this->ratio, d.ratio);
+        }
 
-      degree operator/ (const degree& d) const {
-	return std::visit(overload{
-	    [](const rational<int>& q1, const rational<int>& q2) {
-	      return degree(q1 / q2); },
-	    [](const rational<int>& q, const double& p) {
-	      return degree(1200. * log2(rational_cast<double>(q) / p)); },
-	    [](const double& p, const rational<int>& q) {
-	      return degree(1200. * log2(p / rational_cast<double>(q))); },
-            [](const double& p1, const double& p2) {
-	      return degree(1200. * log2(p1 / p2)); }
-	}, this->ratio, d.ratio);
-      }
+        degree operator/ (const degree& d) const {
+            using boost::rational, boost::rational_cast, std::log2;
+            return std::visit(overload{
+                [](const rational<int>& q1, const rational<int>& q2) {
+                    return degree(q1 / q2); },
+                [](const rational<int>& q, const double& p) {
+                    return degree(1200. *
+				  log2(rational_cast<double>(q) / p)); },
+                [](const double& p, const rational<int>& q) {
+                    return degree(1200. *
+				  log2(p / rational_cast<double>(q))); },
+                [](const double& p1, const double& p2) {
+                    return degree(1200. * log2(p1 / p2)); }
+            }, this->ratio, d.ratio);
+        }
 
-      degree& operator*= (const degree& d) {
-	std::visit(overload{
-	    [](rational<int>& q1, const rational<int>& q2) {
-	      q1 *= q2; },
-	    [&](rational<int>& q, const double& p) {
-	      ratio.emplace<double>(rational_cast<double>(q) * p); },
-	    [](double& p, const rational<int>& q) {
-	      p *= rational_cast<double>(q); },
-	    [](double& p1, const double& p2) {
-	      p1 *= p2; }
-	    }, ratio, d.ratio);
-	return *this;
-      }
+        degree& operator*= (const degree& d) {
+            using boost::rational, boost::rational_cast;
+            std::visit(overload{
+                [](rational<int>& q1, const rational<int>& q2) {
+                    q1 *= q2; },
+                [&](rational<int>& q, const double& p) {
+                    ratio.emplace<double>(rational_cast<double>(q) * p); },
+                [](double& p, const rational<int>& q) {
+                    p *= rational_cast<double>(q); },
+                [](double& p1, const double& p2) {
+                    p1 *= p2; }
+            }, ratio, d.ratio);
+            return *this;
+        }
 
-      degree& operator/= (const degree& d) {
-	std::visit(overload{
-	    [](rational<int>& q1, const rational<int>& q2) {
-	      q1 /= q2; },
-	    [&](rational<int>& q, const double& p) {
-	      ratio.emplace<double>(rational_cast<double>(q) / p); },
-	    [](double& p, const rational<int>& q) {
-	      p /= rational_cast<double>(q); },
-	    [](double& p1, const double& p2) {
-	      p1 /= p2; }
-	    }, ratio, d.ratio);
-	return *this;
-      }
+        degree& operator/= (const degree& d) {
+            using boost::rational, boost::rational_cast;
+            std::visit(overload{
+                [](rational<int>& q1, const rational<int>& q2) {
+                    q1 /= q2; },
+                [&](rational<int>& q, const double& p) {
+                    ratio.emplace<double>(rational_cast<double>(q) / p); },
+                [](double& p, const rational<int>& q) {
+                    p /= rational_cast<double>(q); },
+                [](double& p1, const double& p2) {
+                    p1 /= p2; }
+            }, ratio, d.ratio);
+            return *this;
+        }
 
     };
 
