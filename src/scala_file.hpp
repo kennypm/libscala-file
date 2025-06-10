@@ -43,7 +43,7 @@ namespace scala {
 
         double get_ratio() {
             // Use to get the value
-            // now somewhat confusingly named but preserves prior behavior
+            // Somewhat ambiguously named but preserves prior behavior
             using boost::rational, boost::rational_cast;
             return std::visit(overload{
                 [](double& p)        { return p; },
@@ -51,6 +51,10 @@ namespace scala {
             }, ratio);
         }
 
+        // Operator overloads take care of type conversions automatically
+        // so we can * and / scala::degree's as if they're simply ratios
+        // and count on the precision of the rational type to be preserved
+        // until an irrational (cents-based) value is introduced
         degree operator* (const degree& d) const {
             using boost::rational, boost::rational_cast, std::log2;
             return std::visit(overload{

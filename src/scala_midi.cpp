@@ -15,7 +15,7 @@ namespace scala {
 
         int relative = note - map.middle_note;
         int scale_degree = relative % map.map_size;
-        // modulus with negative numbers doesn't behave how we need it to
+        // Modulus with negative numbers doesn't behave how we need it to
         if(scale_degree < 0) scale_degree += map.map_size;
         int num_octaves = std::floor(static_cast<double>(relative) /
 				     static_cast<double>(map.map_size));
@@ -26,6 +26,8 @@ namespace scala {
 
         degree ret = scl.degrees[ map.mapping[scale_degree] ];
 
+        // Adjust for middle_note != reference_note
+        // so the ratio can just be multiplied by reference_frequency
         if(note != map.reference_note)
             ret /= convert_midi_inner(map.reference_note, scl, map);
 
@@ -37,8 +39,6 @@ namespace scala {
         return ret;
     }
 
-    // adjust for middle_note != reference_note
-    // so the return value can simply be multiplied by reference_frequency
     degree convert_midi(int note, scale scl, kbm map){
         if(note == map.reference_note)
             return degree(1,1);
