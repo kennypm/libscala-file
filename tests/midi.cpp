@@ -1,15 +1,14 @@
 #include <iostream>
 #include "scala_file.hpp"
 
-// this is a crude test, just to observe the behavior of the
-// rational vs. irrational type conversions
+// test with and without center_note == reference_note
 int main(int, char**) {
   std::ifstream test_scl, test_kbm;
   test_scl.open("scales/meanquar.scl");
   test_kbm.open("kbm/12-tet.kbm");
   scala::scale loaded_scl = scala::read_scl(test_scl);
   scala::kbm loaded_kbm = scala::read_kbm(test_kbm);
-  //  loaded_kbm.reference_note = loaded_kbm.middle_note;
+      loaded_kbm.reference_note = loaded_kbm.middle_note;
 
   for(int i=0; i<128; i++) {
     try {

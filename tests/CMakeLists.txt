@@ -43,6 +43,11 @@ add_executable (test-kbm-xs kbm-xs.cpp)
 target_link_libraries(test-kbm-xs PUBLIC scala-file)
 add_test(NAME "Keyboard-mapping-with-non-entries" COMMAND test-kbm-xs)
 
+# Tests scala::degree ratio type conversions
+add_executable (test-types types.cpp)
+target_link_libraries(test-types PUBLIC scala-file)
+add_test(NAME "Ratio-type-conversions" COMMAND test-types)
+
 # Tests MIDI mapping
 add_executable (test-midi midi.cpp)
 target_link_libraries(test-midi PUBLIC scala-file)
