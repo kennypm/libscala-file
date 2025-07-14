@@ -25,11 +25,7 @@ namespace scala {
         template<class... Ts>
         struct overload : Ts... { using Ts::operator()...; };
 
-        enum class init_type {
-            cents,
-            ratio
-        };
-
+        enum class init_type { cents, ratio };
         std::variant<double, boost::rational<int>> ratio;
 
         degree (int n, int d){
@@ -37,7 +33,7 @@ namespace scala {
             ratio = boost::rational<int> (n, d);
         }
 
-        degree (double value, init_type type = init_type::cents){
+        explicit degree (double value, init_type type = init_type::cents){
             // One input: cents (default)
             if(type == init_type::cents)
                 ratio = std::pow(std::pow(2, 1.0 / 12.0), value/100.0);
