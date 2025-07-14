@@ -29,7 +29,7 @@ namespace scala {
             cents,
             ratio
         };
-        
+
         std::variant<double, boost::rational<int>> ratio;
 
         degree (int n, int d){

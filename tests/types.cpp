@@ -1,11 +1,11 @@
-#include <iostream>
+ #include <iostream>
 #include <cassert>
 #include <math.h>
 
 #include "scala_file.hpp"
 
 int main(int, char**) {
-    std::ifstream test_scale; 
+    std::ifstream test_scale;
     test_scale.open("scales/meanquar.scl");
     scala::scale loaded_scale = scala::read_scl(test_scale);
 
@@ -41,7 +41,7 @@ int main(int, char**) {
             assert(test_degree.get_double() == loaded_scale.get_ratio(scale_index) / deg.get_ratio());
         }
     }
-    
+
     test_scale.close();
     return 0;
 }
