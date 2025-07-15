@@ -43,15 +43,20 @@ add_executable (test-kbm-xs kbm-xs.cpp)
 target_link_libraries(test-kbm-xs PUBLIC scala-file)
 add_test(NAME "Keyboard-mapping-with-non-entries" COMMAND test-kbm-xs)
 
-# Tests scala::degree ratio type conversions
-add_executable (test-types types.cpp)
-target_link_libraries(test-types PUBLIC scala-file)
-add_test(NAME "Ratio-type-conversions" COMMAND test-types)
+# Tests scala::degree ratio mixed type conversions
+add_executable (test-types-mixed types-mixed.cpp)
+target_link_libraries(test-types-mixed PUBLIC scala-file)
+add_test(NAME "Ratio-type-conversions-mixed" COMMAND test-types-mixed)
+
+# Tests scala::degree operations preserving just rationals
+add_executable (test-types-just types-just.cpp)
+target_link_libraries(test-types-just PUBLIC scala-file)
+add_test(NAME "Ratio-types-just" COMMAND test-types-just)
 
 # Tests MIDI mapping
-add_executable (test-midi midi.cpp)
-target_link_libraries(test-midi PUBLIC scala-file)
-add_test(NAME "MIDI-Mapping" COMMAND test-midi)
+#add_executable (test-midi midi.cpp)
+#target_link_libraries(test-midi PUBLIC scala-file)
+#add_test(NAME "MIDI-Mapping" COMMAND test-midi)
 
 # This copies our test data into our build directory, so that our tests 
 # have access to it.

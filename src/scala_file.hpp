@@ -33,6 +33,10 @@ namespace scala {
             ratio = boost::rational<int> (n, d);
         }
 
+        explicit degree (boost::rational<int> q){
+            ratio = q;
+        }
+
         explicit degree (double value, init_type type = init_type::cents){
             // One input: cents (default)
             if(type == init_type::cents)
@@ -41,16 +45,13 @@ namespace scala {
             else ratio = value;
         }
 
-        explicit degree (boost::rational<int> q){
-            ratio = q;
-        }
-
         double get_ratio() {
             // Use to get the value
             return get_double();
         }
 
         double get_double() {
+            // Converts boost::rational to double
             using boost::rational, boost::rational_cast;
             return std::visit(overload{
                 [](double& p)        { return p; },
@@ -58,9 +59,21 @@ namespace scala {
             }, ratio);
         }
 
+        boost::rational<int>& get_rational() {
+            // Throws std::bad_variant_access if "ratio" is irrational
+            return std::get<boost::rational<int>>(ratio);
+        }
+
+        bool is_rational() {
+            return std::holds_alternative<boost::rational<int>>(ratio);
+        }
+
         degree pow (int exp){
+            // Helper function for repeated * or / of the same degree
+            // Used in convert_midi()
             degree ret = *this;
             if(exp > 0) for(int i=0; i<exp; i++) ret *= *this;
+            // ********* Why not just do /= here??? *********
             if(exp < 0) {
                 degree recip = degree(boost::rational<int>(1,1)) / *this;
                 for(int i=0; i>exp; i--) ret *= recip;
