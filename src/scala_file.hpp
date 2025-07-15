@@ -51,7 +51,7 @@ namespace scala {
         }
 
         double get_double() {
-            // Converts boost::rational to double
+            // Converts boost::rational to double automatically
             using boost::rational, boost::rational_cast;
             return std::visit(overload{
                 [](double& p)        { return p; },
