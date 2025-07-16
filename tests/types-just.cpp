@@ -1,4 +1,4 @@
- #include <iostream>
+#include <iostream>
 #include <cassert>
 #include <math.h>
 
@@ -14,32 +14,36 @@ int main(int, char**) {
         Make sure rationals are preserved as expected
     */
 
-    scala::degree test_degree(1,1);
+    scala::real test_real;
 
     // We'll just be exhaustive and test every degree against every other
     for(int index = 0; index < loaded_scale.degrees.size(); index++) {
         for(scala::degree deg : loaded_scale.degrees) {
-            test_degree = loaded_scale.degrees[index] * deg;
-            assert(test_degree.is_rational());
-            assert(test_degree.get_rational() ==
-                   loaded_scale.degrees[index].get_rational() * deg.get_rational());
+            test_real = loaded_scale.degrees[index].ratio * deg.ratio;
+            assert(test_real.is_rational());
+            assert(test_real.get_rational() ==
+                   loaded_scale.degrees[index].ratio.get_rational() *
+                   deg.ratio.get_rational());
 
-            test_degree = loaded_scale.degrees[index] / deg;
-            assert(test_degree.is_rational());
-            assert(test_degree.get_rational() ==
-                   loaded_scale.degrees[index].get_rational() / deg.get_rational());
+            test_real = loaded_scale.degrees[index].ratio / deg.ratio;
+            assert(test_real.is_rational());
+            assert(test_real.get_rational() ==
+                   loaded_scale.degrees[index].ratio.get_rational() /
+                   deg.ratio.get_rational());
 
-            test_degree = loaded_scale.degrees[index];
-            test_degree *= deg;
-            assert(test_degree.is_rational());
-            assert(test_degree.get_rational() ==
-                   loaded_scale.degrees[index].get_rational() * deg.get_rational());
+            test_real = loaded_scale.degrees[index].ratio;
+            test_real *= deg.ratio;
+            assert(test_real.is_rational());
+            assert(test_real.get_rational() ==
+                   loaded_scale.degrees[index].ratio.get_rational() *
+                   deg.ratio.get_rational());
 
-            test_degree = loaded_scale.degrees[index];
-            test_degree /= deg;
-            assert(test_degree.is_rational());
-            assert(test_degree.get_rational() ==
-                   loaded_scale.degrees[index].get_rational() / deg.get_rational());
+            test_real = loaded_scale.degrees[index].ratio;
+            test_real /= deg.ratio;
+            assert(test_real.is_rational());
+            assert(test_real.get_rational() ==
+                   loaded_scale.degrees[index].ratio.get_rational() /
+                   deg.ratio.get_rational());
         }
     }
 

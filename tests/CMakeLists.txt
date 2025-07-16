@@ -54,9 +54,9 @@ target_link_libraries(test-types-just PUBLIC scala-file)
 add_test(NAME "Ratio-types-just" COMMAND test-types-just)
 
 # Tests MIDI mapping
-#add_executable (test-midi midi.cpp)
-#target_link_libraries(test-midi PUBLIC scala-file)
-#add_test(NAME "MIDI-Mapping" COMMAND test-midi)
+add_executable (test-midi midi.cpp)
+target_link_libraries(test-midi PUBLIC scala-file)
+add_test(NAME "MIDI-Mapping" COMMAND test-midi)
 
 # This copies our test data into our build directory, so that our tests 
 # have access to it.

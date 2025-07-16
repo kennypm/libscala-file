@@ -20,12 +20,84 @@
 
 namespace scala {
 
-    struct degree {
+    struct real : public std::variant<double, boost::rational<int>> {
+
+        using std::variant<double, boost::rational<int>>::variant;
+        using std::variant<double, boost::rational<int>>::operator=;
 
         template<class... Ts>
         struct overload : Ts... { using Ts::operator()...; };
 
-        std::variant<double, boost::rational<int>> ratio;
+        double get_double() {
+            // Converts boost::rational to double automatically
+            using boost::rational, boost::rational_cast;
+            return std::visit(overload{
+                [](double& p)        { return p; },
+                [](rational<int>& q) { return rational_cast<double>(q); }
+            }, *this);
+        }
+
+        boost::rational<int>& get_rational() {
+            // Throws std::bad_variant_access if irrational
+            return std::get<boost::rational<int>>(*this);
+        }
+
+        bool is_rational() {
+            return std::holds_alternative<boost::rational<int>>(*this);
+        }
+
+        /* Operator overloads take care of type conversions automatically
+           so we can * and / scala::real's as if they're simply ratios
+           and count on the precision of the rational type to be preserved
+           until an irrational (cents-based) value is introduced */
+
+        real& operator*= (const real& r) {
+            using boost::rational, boost::rational_cast;
+            std::visit(overload{
+                [](rational<int>& q1, const rational<int>& q2) {
+                    q1 *= q2; },
+                [&](rational<int>& q, const double& p) {
+                    this->emplace<double>(rational_cast<double>(q) * p); },
+                [](double& p, const rational<int>& q) {
+                    p *= rational_cast<double>(q); },
+                [](double& p1, const double& p2) {
+                    p1 *= p2; }
+            }, *this, r);
+            return *this;
+        }
+
+        real& operator/= (const real& r) {
+            using boost::rational, boost::rational_cast;
+            std::visit(overload{
+                [](rational<int>& q1, const rational<int>& q2) {
+                    q1 /= q2; },
+                [&](rational<int>& q, const double& p) {
+                    this->emplace<double>(rational_cast<double>(q) / p); },
+                [](double& p, const rational<int>& q) {
+                    p /= rational_cast<double>(q); },
+                [](double& p1, const double& p2) {
+                    p1 /= p2; }
+            }, *this, r);
+            return *this;
+        }
+
+    };
+
+    inline real operator* (const real& d1, const real& d2) {
+        real ret = d1;
+        ret *= d2;
+        return ret;
+    }
+
+    inline real operator/ (const real& d1, const real& d2) {
+        real ret = d1;
+        ret /= d2;
+        return ret;
+    }
+
+    struct degree {
+
+        real ratio;
 
         degree (int n, int d){
             // Two inputs: a ratio
@@ -39,75 +111,10 @@ namespace scala {
 
         double get_ratio() {
             // Use to get the value
-            return get_double();
-        }
-
-        double get_double() {
-            // Converts boost::rational to double automatically
-            using boost::rational, boost::rational_cast;
-            return std::visit(overload{
-                [](double& p)        { return p; },
-                [](rational<int>& q) { return rational_cast<double>(q); }
-            }, ratio);
-        }
-
-        boost::rational<int>& get_rational() {
-            // Throws std::bad_variant_access if "ratio" is irrational
-            return std::get<boost::rational<int>>(ratio);
-        }
-
-        bool is_rational() {
-            return std::holds_alternative<boost::rational<int>>(ratio);
-        }
-
-        /* Operator overloads take care of type conversions automatically
-           so we can * and / scala::degree's as if they're simply ratios
-           and count on the precision of the rational type to be preserved
-           until an irrational (cents-based) value is introduced */
-
-        degree& operator*= (const degree& d) {
-            using boost::rational, boost::rational_cast;
-            std::visit(overload{
-                [](rational<int>& q1, const rational<int>& q2) {
-                    q1 *= q2; },
-                [&](rational<int>& q, const double& p) {
-                    ratio.emplace<double>(rational_cast<double>(q) * p); },
-                [](double& p, const rational<int>& q) {
-                    p *= rational_cast<double>(q); },
-                [](double& p1, const double& p2) {
-                    p1 *= p2; }
-            }, ratio, d.ratio);
-            return *this;
-        }
-
-        degree& operator/= (const degree& d) {
-            using boost::rational, boost::rational_cast;
-            std::visit(overload{
-                [](rational<int>& q1, const rational<int>& q2) {
-                    q1 /= q2; },
-                [&](rational<int>& q, const double& p) {
-                    ratio.emplace<double>(rational_cast<double>(q) / p); },
-                [](double& p, const rational<int>& q) {
-                    p /= rational_cast<double>(q); },
-                [](double& p1, const double& p2) {
-                    p1 /= p2; }
-            }, ratio, d.ratio);
-            return *this;
+            return ratio.get_double();
         }
 
     };
-
-    inline degree operator*(const degree& d1, const degree& d2) {
-        degree ret = d1;
-        ret *= d2;
-        return ret;
-    }
-
-    inline degree operator/(const degree& d1, const degree& d2) {
-        degree ret = d1;
-        ret /= d2;
-        return ret;
-    }
 
     struct scale {
         
@@ -218,5 +225,5 @@ namespace scala {
 
     scale read_scl(std::ifstream& input_file);
     kbm read_kbm(std::ifstream& input_file);
-    degree convert_midi(int note, scale scl, kbm map);
+    real convert_midi(int note, scale scl, kbm map);
 }

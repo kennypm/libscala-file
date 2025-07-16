@@ -12,10 +12,10 @@ int main(int, char**) {
 
   for(int i=0; i<128; i++) {
     try {
-      scala::degree d = scala::convert_midi(i, loaded_scl, loaded_kbm);
-      std::visit(scala::degree::overload{
+      scala::real r = scala::convert_midi(i, loaded_scl, loaded_kbm);
+      std::visit(scala::real::overload{
 	  [](auto& val) { std::cout << val << std::endl; }
-	}, d.ratio);
+	}, r);
     } catch (const std::runtime_error& e) {
       //      std::cout << e.what() << std::endl;
     }
