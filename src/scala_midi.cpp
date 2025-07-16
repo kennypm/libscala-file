@@ -23,7 +23,11 @@ namespace scala {
         degree ret = scl.degrees[ map.mapping[scale_degree] ];
         int num_octaves = std::floor(static_cast<double>(relative) /
 				     static_cast<double>(map.map_size));
-        ret *= scl.degrees[map.octave_degree].pow(num_octaves);
+
+        if(num_octaves > 0) for(int i=0; i<num_octaves; i++)
+                                ret *= scl.degrees[map.octave_degree];
+        if(num_octaves < 0) for(int i=0; i>num_octaves; i--)
+                                ret /= scl.degrees[map.octave_degree];
 
         // Adjust for when map.middle_note != map.reference_note
         // so the ratio can just be multiplied by map.reference_frequency

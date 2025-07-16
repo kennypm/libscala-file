@@ -45,7 +45,7 @@ int main(int, char**) {
                    loaded_scale.get_ratio(index) / deg.get_ratio());
         }
     }
-    
+
     test_scale.close();
     return 0;
 }

@@ -42,7 +42,7 @@ int main(int, char**) {
                    loaded_scale.degrees[index].get_rational() / deg.get_rational());
         }
     }
-    
+
     test_scale.close();
     return 0;
 }

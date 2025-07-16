@@ -25,7 +25,6 @@ namespace scala {
         template<class... Ts>
         struct overload : Ts... { using Ts::operator()...; };
 
-        enum class init_type { cents, ratio };
         std::variant<double, boost::rational<int>> ratio;
 
         degree (int n, int d){
@@ -33,16 +32,9 @@ namespace scala {
             ratio = boost::rational<int> (n, d);
         }
 
-        explicit degree (boost::rational<int> q){
-            ratio = q;
-        }
-
-        explicit degree (double value, init_type type = init_type::cents){
-            // One input: cents (default)
-            if(type == init_type::cents)
-                ratio = std::pow(std::pow(2, 1.0 / 12.0), value/100.0);
-            // Otherwise take directly as ratio
-            else ratio = value;
+        explicit degree (double cents){
+            // One input: cents
+            ratio = pow(pow(2, 1.0 / 12.0), cents/100.0);
         }
 
         double get_ratio() {
@@ -68,55 +60,10 @@ namespace scala {
             return std::holds_alternative<boost::rational<int>>(ratio);
         }
 
-        degree pow (int exp){
-            // Helper function for repeated * or / of the same degree
-            // Used in convert_midi()
-            degree ret = *this;
-            if(exp > 0) for(int i=0; i<exp; i++) ret *= *this;
-            // ********* Why not just do /= here??? *********
-            if(exp < 0) {
-                degree recip = degree(boost::rational<int>(1,1)) / *this;
-                for(int i=0; i>exp; i--) ret *= recip;
-            }
-            return ret;
-        }
-
         /* Operator overloads take care of type conversions automatically
            so we can * and / scala::degree's as if they're simply ratios
            and count on the precision of the rational type to be preserved
            until an irrational (cents-based) value is introduced */
-
-        degree operator* (const degree& d) const {
-            using boost::rational, boost::rational_cast;
-            return std::visit(overload{
-                [](const rational<int>& q1, const rational<int>& q2) {
-                    return degree(q1 * q2); },
-                [](const rational<int>& q, const double& p) {
-                    return degree(rational_cast<double>(q) * p,
-                                  init_type::ratio); },
-                [](const double& p, const rational<int>& q) {
-                    return degree(p * rational_cast<double>(q),
-                                  init_type::ratio); },
-                [](const double& p1, const double& p2) {
-                    return degree(p1 * p2, init_type::ratio); }
-            }, this->ratio, d.ratio);
-        }
-
-        degree operator/ (const degree& d) const {
-            using boost::rational, boost::rational_cast, std::log2;
-            return std::visit(overload{
-                [](const rational<int>& q1, const rational<int>& q2) {
-                    return degree(q1 / q2); },
-                [](const rational<int>& q, const double& p) {
-                    return degree(rational_cast<double>(q) / p,
-                                  init_type::ratio); },
-                [](const double& p, const rational<int>& q) {
-                    return degree(p / rational_cast<double>(q),
-                                  init_type::ratio); },
-                [](const double& p1, const double& p2) {
-                    return degree(p1 / p2, init_type::ratio); }
-            }, this->ratio, d.ratio);
-        }
 
         degree& operator*= (const degree& d) {
             using boost::rational, boost::rational_cast;
@@ -149,6 +96,18 @@ namespace scala {
         }
 
     };
+
+    inline degree operator*(const degree& d1, const degree& d2) {
+        degree ret = d1;
+        ret *= d2;
+        return ret;
+    }
+
+    inline degree operator/(const degree& d1, const degree& d2) {
+        degree ret = d1;
+        ret /= d2;
+        return ret;
+    }
 
     struct scale {
         
