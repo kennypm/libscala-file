@@ -30,7 +30,7 @@ namespace scala {
                                 ret /= scl.degrees[map.octave_degree].ratio;
 
         // Adjust for when map.middle_note != map.reference_note
-        // so the ratio can just be multiplied by map.reference_frequency
+        // so the real can just be multiplied by map.reference_frequency
         if(note != map.reference_note)
             ret /= convert_midi_inner(map.reference_note, scl, map);
 

@@ -20,10 +20,10 @@
 
 namespace scala {
 
-    struct real : public std::variant<double, boost::rational<int>> {
+    struct real : public std::variant<boost::rational<int>, double> {
 
-        using std::variant<double, boost::rational<int>>::variant;
-        using std::variant<double, boost::rational<int>>::operator=;
+        using std::variant<boost::rational<int>, double>::variant;
+        using std::variant<boost::rational<int>, double>::operator=;
 
         template<class... Ts>
         struct overload : Ts... { using Ts::operator()...; };
@@ -51,7 +51,7 @@ namespace scala {
            and count on the precision of the rational type to be preserved
            until an irrational (cents-based) value is introduced */
 
-        real& operator*= (const real& r) {
+        real& operator*= (const real& rhs) {
             using boost::rational, boost::rational_cast;
             std::visit(overload{
                 [](rational<int>& q1, const rational<int>& q2) {
@@ -62,11 +62,11 @@ namespace scala {
                     p *= rational_cast<double>(q); },
                 [](double& p1, const double& p2) {
                     p1 *= p2; }
-            }, *this, r);
+            }, *this, rhs);
             return *this;
         }
 
-        real& operator/= (const real& r) {
+        real& operator/= (const real& rhs) {
             using boost::rational, boost::rational_cast;
             std::visit(overload{
                 [](rational<int>& q1, const rational<int>& q2) {
@@ -77,21 +77,21 @@ namespace scala {
                     p /= rational_cast<double>(q); },
                 [](double& p1, const double& p2) {
                     p1 /= p2; }
-            }, *this, r);
+            }, *this, rhs);
             return *this;
         }
 
     };
 
-    inline real operator* (const real& d1, const real& d2) {
-        real ret = d1;
-        ret *= d2;
+    inline real operator* (const real& lhs, const real& rhs) {
+        real ret = lhs;
+        ret *= rhs;
         return ret;
     }
 
-    inline real operator/ (const real& d1, const real& d2) {
-        real ret = d1;
-        ret /= d2;
+    inline real operator/ (const real& lhs, const real& rhs) {
+        real ret = lhs;
+        ret /= rhs;
         return ret;
     }
 
