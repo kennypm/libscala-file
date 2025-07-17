@@ -22,6 +22,7 @@ namespace scala {
 
     struct real : public std::variant<boost::rational<int>, double> {
 
+        // Empty constructor defaults to boost::rational<int>(0,1)
         using std::variant<boost::rational<int>, double>::variant;
         using std::variant<boost::rational<int>, double>::operator=;
 
@@ -47,9 +48,9 @@ namespace scala {
         }
 
         /* Operator overloads take care of type conversions automatically
-           so we can * and / scala::real's as if they're simply ratios
-           and count on the precision of the rational type to be preserved
-           until an irrational (cents-based) value is introduced */
+           so we can * and / reals as if they're simply ratios and count
+           on the precision of the rational type to be preserved until an
+           irrational (cents-based) value is introduced */
 
         real& operator*= (const real& rhs) {
             using boost::rational, boost::rational_cast;
