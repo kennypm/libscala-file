@@ -126,12 +126,12 @@ The ``scala::real`` Type
 Any justly-tuned degrees are rational numbers and therefore may be represented exactly as a pair of integers. Approximation of these rationals with even a double-precision floating-point format may lead to compounding of rounding error and loss of tuning precision over repeated multiplications or divisions. For this reason, the ``scala::real`` type is provided as an extension of a ``std::variant`` containing either a ``double`` or a ``boost::rational``. "Real" is used here in the formal mathematical sense -- the union of the sets of rational and irrational numbers -- rather than as a synonym for floating-point as seen in ALGOL and Pascal. Though these types may be accessed with any methods normally used for a ``std::variant``, the following methods are provided for convenience:
 ::
   // Will automatically convert a boost::rational to floating-point approximation
-  double                  scala::real::get_double()
+                double scala::real::get_double()
   
   // Throws std::bad_variant_access if irrational
-  boost::rational<int>&   scala::real::get_rational()
+ boost::rational<int>& scala::real::get_rational()
   
-  bool                    scala::real::is_rational()
+                  bool scala::real::is_rational()
 
 Multiplication and division operators for ``scala::real`` will automatically handle any necessary type casting and preserve the precision of rationals as long as possible.
 
