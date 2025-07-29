@@ -14,7 +14,8 @@ int main(int, char**) {
     try {
       scala::real r = scala::convert_midi(i, loaded_scl, loaded_kbm);
       std::visit(scala::real::overload{
-	  [](auto& val) { std::cout << val << std::endl; }
+          [](std::monostate& m) { throw std::bad_variant_access(); },
+          [](auto& val) { std::cout << val << std::endl; }
 	}, r);
     } catch (const std::runtime_error& e) {
       //      std::cout << e.what() << std::endl;

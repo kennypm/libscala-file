@@ -20,11 +20,16 @@
 
 namespace scala {
 
-    struct real : public std::variant<boost::rational<int>, double> {
+    struct real : public std::variant<std::monostate,
+                                      boost::rational<int>,
+                                      double> {
 
-        // Empty constructor defaults to boost::rational<int>(0,1)
-        using std::variant<boost::rational<int>, double>::variant;
-        using std::variant<boost::rational<int>, double>::operator=;
+        using std::variant<std::monostate,
+                           boost::rational<int>,
+                           double>::variant;
+        using std::variant<std::monostate,
+                           boost::rational<int>,
+                           double>::operator=;
 
         template<class... Ts>
         struct overload : Ts... { using Ts::operator()...; };
@@ -33,13 +38,17 @@ namespace scala {
             // Converts boost::rational to double automatically
             using boost::rational, boost::rational_cast;
             return std::visit(overload{
-                [](double& p)        { return p; },
-                [](rational<int>& q) { return rational_cast<double>(q); }
+                [](double& p) {
+                    return p; },
+                [](rational<int>& q) {
+                    return rational_cast<double>(q); },
+                [](std::monostate& m) {
+                    throw std::bad_variant_access(); return 0.; }
             }, *this);
         }
 
         boost::rational<int>& get_rational() {
-            // Throws std::bad_variant_access if irrational
+            // Throws std::bad_variant_access if not rational
             return std::get<boost::rational<int>>(*this);
         }
 
@@ -62,7 +71,9 @@ namespace scala {
                 [](double& p, const rational<int>& q) {
                     p *= rational_cast<double>(q); },
                 [](double& p1, const double& p2) {
-                    p1 *= p2; }
+                    p1 *= p2; },
+                [](auto& a1, const auto& a2) {
+                    throw std::bad_variant_access(); }
             }, *this, rhs);
             return *this;
         }
@@ -77,7 +88,9 @@ namespace scala {
                 [](double& p, const rational<int>& q) {
                     p /= rational_cast<double>(q); },
                 [](double& p1, const double& p2) {
-                    p1 /= p2; }
+                    p1 /= p2; },
+                [](auto& a1, const auto& a2) {
+                    throw std::bad_variant_access(); }
             }, *this, rhs);
             return *this;
         }
