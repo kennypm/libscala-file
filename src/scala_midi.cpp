@@ -9,7 +9,7 @@
 namespace scala {
 
     real convert_midi_inner(int note, scale scl, kbm map){
-        if( !(map.first_note <= note <= map.last_note) )
+        if( !((map.first_note <= note) && (note <= map.last_note)) )
             throw std::runtime_error("MIDI note out of kbm range");
 
         int relative = note - map.middle_note;
@@ -38,10 +38,9 @@ namespace scala {
     }
 
     real convert_midi(int note, scale scl, kbm map){
-        if(note == map.reference_note)
-            return real(boost::rational<int>(1,1));
-        else
-            return convert_midi_inner(note, scl, map);
+        return (note != map.reference_note)
+            ? convert_midi_inner(note, scl, map)
+            : real(boost::rational<int>(1,1));
     }
 
 }

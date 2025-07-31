@@ -66,7 +66,7 @@ namespace scala {
             std::visit(overload{
                 [](rational<int>& q1, const rational<int>& q2) {
                     q1 *= q2; },
-                [&](rational<int>& q, const double& p) {
+                [this](rational<int>& q, const double& p) {
                     this->emplace<double>(rational_cast<double>(q) * p); },
                 [](double& p, const rational<int>& q) {
                     p *= rational_cast<double>(q); },
@@ -83,7 +83,7 @@ namespace scala {
             std::visit(overload{
                 [](rational<int>& q1, const rational<int>& q2) {
                     q1 /= q2; },
-                [&](rational<int>& q, const double& p) {
+                [this](rational<int>& q, const double& p) {
                     this->emplace<double>(rational_cast<double>(q) / p); },
                 [](double& p, const rational<int>& q) {
                     p /= rational_cast<double>(q); },
@@ -113,15 +113,13 @@ namespace scala {
 
         real ratio;
 
-        degree (int n, int d){
+        degree (int n, int d)
             // Two inputs: a ratio
-            ratio = boost::rational<int> (n, d);
-        }
+            : ratio( boost::rational<int>(n,d) ) {}
 
-        explicit degree (double cents){
+        explicit degree (double cents)
             // One input: cents
-            ratio = pow(pow(2, 1.0 / 12.0), cents/100.0);
-        }
+            : ratio( pow(pow(2, 1.0 / 12.0), cents/100.0) ) {}
 
         double get_ratio() {
             // Use to get the value

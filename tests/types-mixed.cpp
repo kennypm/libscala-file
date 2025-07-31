@@ -27,25 +27,25 @@ int main(int, char**) {
     scala::real test_real;
 
     // We'll just be exhaustive and test every degree against every other
-    for(int index = 0; index < loaded_scale.degrees.size(); index++) {
+    for(size_t i = 0; i < loaded_scale.get_scale_length(); ++i) {
         for(scala::degree deg : loaded_scale.degrees) {
-            test_real = loaded_scale.degrees[index].ratio * deg.ratio;
+            test_real = loaded_scale.degrees[i].ratio * deg.ratio;
             assert(test_real.get_double() ==
-                   loaded_scale.get_ratio(index) * deg.get_ratio());
+                   loaded_scale.get_ratio(i) * deg.get_ratio());
 
-            test_real = loaded_scale.degrees[index].ratio / deg.ratio;
+            test_real = loaded_scale.degrees[i].ratio / deg.ratio;
             assert(test_real.get_double() ==
-                   loaded_scale.get_ratio(index) / deg.get_ratio());
+                   loaded_scale.get_ratio(i) / deg.get_ratio());
 
-            test_real = loaded_scale.degrees[index].ratio;
+            test_real = loaded_scale.degrees[i].ratio;
             test_real *= deg.ratio;
             assert(test_real.get_double() ==
-                   loaded_scale.get_ratio(index) * deg.get_ratio());
+                   loaded_scale.get_ratio(i) * deg.get_ratio());
 
-            test_real = loaded_scale.degrees[index].ratio;
+            test_real = loaded_scale.degrees[i].ratio;
             test_real /= deg.ratio;
             assert(test_real.get_double() ==
-                   loaded_scale.get_ratio(index) / deg.get_ratio());
+                   loaded_scale.get_ratio(i) / deg.get_ratio());
         }
     }
 
