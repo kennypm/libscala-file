@@ -1,6 +1,7 @@
 # This creates the scala-scale library. We'll link main to it.
 
 set(BUILD_SHARED_LIBS OFF)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_library (scala-file scala_scl.cpp scala_kbm.cpp scala_midi.cpp)
 
